@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WealthPath — Smart Savings Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">Wealth<span>Path</span></div>
+  <div class="step-indicator" id="stepIndicator"></div>
+</header>
+
+<main>
+  <!-- STEPS -->
+  <div id="stepsContainer">
+
+    <!-- Step 1: Age & Basics -->
+    <div class="step active card" id="step-1">
+      <div class="step-title">Let's start with<br><span style="color:var(--accent)">the basics</span></div>
+      <div class="step-sub">A few personal details to personalise your plan.</div>
+      <div class="form-group">
+        <label>Your Age</label>
+        <input type="number" id="age" placeholder="e.g. 28" min="18" max="70">
+      </div>
+      <div class="form-group">
+        <label>Your Monthly Salary (₹)</label>
+        <div class="input-prefix"><span>₹</span><input type="number" id="salary" placeholder="e.g. 80000"></div>
+      </div>
+      <div class="form-group">
+        <label>Your Dependents (family members who depend on you)</label>
+        <select id="dependents">
+          <option value="0">None — I'm financially independent</option>
+          <option value="1">1 (spouse / parent / child)</option>
+          <option value="2">2</option>
+          <option value="3">3+</option>
+        </select>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="nextStep(1)">Continue →</button></div>
+    </div>
+
+    <!-- Step 2: Risk Appetite -->
+    <div class="step card" id="step-2">
+      <div class="step-title">What's your<br><span style="color:var(--accent)">risk appetite?</span></div>
+      <div class="step-sub">This shapes how aggressively we invest your savings.</div>
+      <div class="risk-grid">
+        <div class="risk-card" onclick="selectRisk('conservative', this)">
+          <div class="risk-icon">🛡️</div>
+          <div class="risk-label">Conservative</div>
+          <div class="risk-desc">I prefer safety over returns. Capital protection first.</div>
+        </div>
+        <div class="risk-card" onclick="selectRisk('moderate', this)">
+          <div class="risk-icon">⚖️</div>
+          <div class="risk-label">Moderate</div>
+          <div class="risk-desc">Balanced growth with some risk. I'm okay with minor dips.</div>
+        </div>
+        <div class="risk-card" onclick="selectRisk('aggressive', this)">
+          <div class="risk-icon">🚀</div>
+          <div class="risk-label">Aggressive</div>
+          <div class="risk-desc">Maximise returns. I can handle market volatility.</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" onclick="prevStep(2)">← Back</button>
+        <button class="btn" onclick="nextStep(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Monthly Expenses -->
+    <div class="step card" id="step-3">
+      <div class="step-title">Your monthly<br><span style="color:var(--accent)">expenses</span></div>
+      <div class="step-sub">Helps us understand how much you can realistically save.</div>
+      <div class="form-group">
+        <label>Rent / EMI (₹)</label>
+        <div class="input-prefix"><span>₹</span><input type="number" id="rent" placeholder="0"></div>
+      </div>
+      <div class="form-group">
+        <label>Groceries & Food (₹)</label>
+        <div class="input-prefix"><span>₹</span><input type="number" id="groceries" placeholder="0"></div>
+      </div>
+      <div class="form-group">
+        <label>Transport (₹)</label>
+        <div class="input-prefix"><span>₹</span><input type="number" id="transport" placeholder="0"></div>
+      </div>
+      <div class="form-group">
+        <label>Other Fixed Expenses (₹)</label>
+        <div class="input-prefix"><span>₹</span><input type="number" id="other" placeholder="0"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" onclick="prevStep(3)">← Back</button>
+        <button class="btn" onclick="nextStep(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Savings Commitment -->
+    <div class="step card" id="step-4">
+      <div class="step-title">How much can<br><span style="color:var(--accent)">you save?</span></div>
+      <div class="step-sub">We'll suggest the optimal amount, but you decide.</div>
+      <div class="form-group">
+        <label>Suggested Savings Rate: <span id="saveRateLabel" style="color:var(--accent);font-size:1.2rem;font-weight:700">20%</span></label>
+        <input type="range" id="saveRate" min="5" max="60" value="20" oninput="updateSaveRate()">
+        <div class="range-labels"><span>5% (Minimum)</span><span>60% (Warrior)</span></div>
+      </div>
+      <div style="text-align:center; padding: 20px 0; border: 1px solid var(--border); border-radius: 12px; background: var(--bg3);">
+        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">Monthly Savings Amount</div>
+        <div class="value-display" id="savingsAmount">₹0</div>
+        <div style="font-size:0.8rem;color:var(--text3);margin-top:4px;" id="savingsNote"></div>
+      </div>
+      <div style="margin-top:16px;background:var(--accent3);border:1px solid #2dff8f22;border-radius:12px;padding:16px;font-size:0.85rem;color:var(--text2);">
+        💡 <strong style="color:var(--text)">Rule of thumb:</strong> Save at least 20% of income. The earlier you start, the more compound interest works for you.
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" onclick="prevStep(4)">← Back</button>
+        <button class="btn" onclick="generatePlan()">Generate My Plan ✨</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="dash-header">
+      <div class="dash-title">Your Savings<br><span style="color:var(--accent)">Blueprint</span></div>
+      <div class="dash-sub" id="dashSub"></div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid" id="summaryGrid"></div>
+
+    <!-- Priority Checklist -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="section-title">🏗️ Financial Foundation First</div>
+      <div id="foundationList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <!-- Allocation -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="section-title">📊 Monthly Allocation Breakdown</div>
+      <div class="bar-track" id="allocBar"></div>
+      <div class="alloc-list" id="allocList"></div>
+    </div>
+
+    <!-- Investment Tips -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="section-title">💡 Personalised Investment Tips</div>
+      <div class="tips-grid" id="tipsList"></div>
+    </div>
+
+    <!-- Expense Tracker -->
+    <div class="card expense-section">
+      <div class="expense-header">
+        <div>
+          <div class="section-title" style="margin-bottom:4px;">💸 Discretionary Budget Tracker</div>
+          <div style="font-size:0.83rem;color:var(--text2)">Track spending from your discretionary allowance</div>
+        </div>
+        <button class="btn" onclick="toggleExpenseForm()" style="padding:10px 18px;font-size:0.9rem;">+ Add Expense</button>
+      </div>
+
+      <!-- Budget Overview -->
+      <div class="budget-bar-wrap">
+        <div class="budget-row">
+          <div>
+            <div style="font-size:0.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Remaining Budget</div>
+            <div class="budget-remaining" id="remainingBudget">₹0</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:0.8rem;color:var(--text2)">Spent</div>
+            <div style="font-weight:700;font-family:'Playfair Display',serif;color:var(--red)" id="spentTotal">₹0</div>
+          </div>
+        </div>
+        <div class="budget-track">
+          <div class="budget-fill" id="budgetFill" style="width:0%;background:var(--accent)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text3);margin-top:6px;">
+          <span>0</span><span id="budgetMax">₹0 Total</span>
+        </div>
+      </div>
+
+      <!-- Add Form -->
+      <div class="add-expense-form" id="expenseForm">
+        <div class="expense-row">
+          <div class="form-group" style="margin:0">
+            <label>Expense Name</label>
+            <input type="text" id="expName" placeholder="e.g. Netflix subscription">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>Amount (₹)</label>
+            <div class="input-prefix"><span>₹</span><input type="number" id="expAmt" placeholder="0"></div>
+          </div>
+          <button class="btn" onclick="addExpense()" style="margin-top:20px">Add</button>
+        </div>
+        <div style="margin-top:12px;">
+          <label>Category</label>
+          <div class="toggle-group">
+            <button class="toggle-btn active" onclick="setExpCat(this,'🎬')">🎬 Entertainment</button>
+            <button class="toggle-btn" onclick="setExpCat(this,'🛍️')">🛍️ Shopping</button>
+            <button class="toggle-btn" onclick="setExpCat(this,'🍕')">🍕 Dining</button>
+            <button class="toggle-btn" onclick="setExpCat(this,'🚗')">🚗 Travel</button>
+            <button class="toggle-btn" onclick="setExpCat(this,'📦')">📦 Other</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expense List -->
+      <div class="expense-list" id="expenseList"></div>
+    </div>
+
+  </div>
+</main>
+
+<button class="reset-btn" onclick="resetAll()">⟳ Start Over</button>
+<script src="app.js"></script>
+</body>
+</html>

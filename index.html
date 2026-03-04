@@ -1,217 +1,395 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WealthPath — Smart Savings Planner</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-  <div class="logo">Wealth<span>Path</span></div>
-  <div class="step-indicator" id="stepIndicator"></div>
-</header>
-
-<main>
-  <!-- STEPS -->
-  <div id="stepsContainer">
-
-    <!-- Step 1: Age & Basics -->
-    <div class="step active card" id="step-1">
-      <div class="step-title">Let's start with<br><span style="color:var(--accent)">the basics</span></div>
-      <div class="step-sub">A few personal details to personalise your plan.</div>
-      <div class="form-group">
-        <label>Your Age</label>
-        <input type="number" id="age" placeholder="e.g. 28" min="18" max="70">
-      </div>
-      <div class="form-group">
-        <label>Your Monthly Salary (₹)</label>
-        <div class="input-prefix"><span>₹</span><input type="number" id="salary" placeholder="e.g. 80000"></div>
-      </div>
-      <div class="form-group">
-        <label>Your Dependents (family members who depend on you)</label>
-        <select id="dependents">
-          <option value="0">None — I'm financially independent</option>
-          <option value="1">1 (spouse / parent / child)</option>
-          <option value="2">2</option>
-          <option value="3">3+</option>
-        </select>
-      </div>
-      <div class="btn-row"><button class="btn" onclick="nextStep(1)">Continue →</button></div>
-    </div>
-
-    <!-- Step 2: Risk Appetite -->
-    <div class="step card" id="step-2">
-      <div class="step-title">What's your<br><span style="color:var(--accent)">risk appetite?</span></div>
-      <div class="step-sub">This shapes how aggressively we invest your savings.</div>
-      <div class="risk-grid">
-        <div class="risk-card" onclick="selectRisk('conservative', this)">
-          <div class="risk-icon">🛡️</div>
-          <div class="risk-label">Conservative</div>
-          <div class="risk-desc">I prefer safety over returns. Capital protection first.</div>
-        </div>
-        <div class="risk-card" onclick="selectRisk('moderate', this)">
-          <div class="risk-icon">⚖️</div>
-          <div class="risk-label">Moderate</div>
-          <div class="risk-desc">Balanced growth with some risk. I'm okay with minor dips.</div>
-        </div>
-        <div class="risk-card" onclick="selectRisk('aggressive', this)">
-          <div class="risk-icon">🚀</div>
-          <div class="risk-label">Aggressive</div>
-          <div class="risk-desc">Maximise returns. I can handle market volatility.</div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn-outline" onclick="prevStep(2)">← Back</button>
-        <button class="btn" onclick="nextStep(2)">Continue →</button>
-      </div>
-    </div>
-
-    <!-- Step 3: Monthly Expenses -->
-    <div class="step card" id="step-3">
-      <div class="step-title">Your monthly<br><span style="color:var(--accent)">expenses</span></div>
-      <div class="step-sub">Helps us understand how much you can realistically save.</div>
-      <div class="form-group">
-        <label>Rent / EMI (₹)</label>
-        <div class="input-prefix"><span>₹</span><input type="number" id="rent" placeholder="0"></div>
-      </div>
-      <div class="form-group">
-        <label>Groceries & Food (₹)</label>
-        <div class="input-prefix"><span>₹</span><input type="number" id="groceries" placeholder="0"></div>
-      </div>
-      <div class="form-group">
-        <label>Transport (₹)</label>
-        <div class="input-prefix"><span>₹</span><input type="number" id="transport" placeholder="0"></div>
-      </div>
-      <div class="form-group">
-        <label>Other Fixed Expenses (₹)</label>
-        <div class="input-prefix"><span>₹</span><input type="number" id="other" placeholder="0"></div>
-      </div>
-      <div class="btn-row">
-        <button class="btn-outline" onclick="prevStep(3)">← Back</button>
-        <button class="btn" onclick="nextStep(3)">Continue →</button>
-      </div>
-    </div>
-
-    <!-- Step 4: Savings Commitment -->
-    <div class="step card" id="step-4">
-      <div class="step-title">How much can<br><span style="color:var(--accent)">you save?</span></div>
-      <div class="step-sub">We'll suggest the optimal amount, but you decide.</div>
-      <div class="form-group">
-        <label>Suggested Savings Rate: <span id="saveRateLabel" style="color:var(--accent);font-size:1.2rem;font-weight:700">20%</span></label>
-        <input type="range" id="saveRate" min="5" max="60" value="20" oninput="updateSaveRate()">
-        <div class="range-labels"><span>5% (Minimum)</span><span>60% (Warrior)</span></div>
-      </div>
-      <div style="text-align:center; padding: 20px 0; border: 1px solid var(--border); border-radius: 12px; background: var(--bg3);">
-        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">Monthly Savings Amount</div>
-        <div class="value-display" id="savingsAmount">₹0</div>
-        <div style="font-size:0.8rem;color:var(--text3);margin-top:4px;" id="savingsNote"></div>
-      </div>
-      <div style="margin-top:16px;background:var(--accent3);border:1px solid #2dff8f22;border-radius:12px;padding:16px;font-size:0.85rem;color:var(--text2);">
-        💡 <strong style="color:var(--text)">Rule of thumb:</strong> Save at least 20% of income. The earlier you start, the more compound interest works for you.
-      </div>
-      <div class="btn-row">
-        <button class="btn-outline" onclick="prevStep(4)">← Back</button>
-        <button class="btn" onclick="generatePlan()">Generate My Plan ✨</button>
-      </div>
-    </div>
-
+<!-- MODAL -->
+<div class="modal-ov" id="modalOv">
+  <div class="modal-box">
+    <div class="modal-ico" id="mIco">⚠️</div>
+    <div class="modal-ttl" id="mTtl"></div>
+    <div class="modal-msg" id="mMsg"></div>
+    <div class="modal-btns" id="mBtns"></div>
   </div>
+</div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard">
-    <div class="dash-header">
-      <div class="dash-title">Your Savings<br><span style="color:var(--accent)">Blueprint</span></div>
-      <div class="dash-sub" id="dashSub"></div>
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="auth-logo-name">WealthPath</div>
+      <div class="auth-logo-sub">Your personal savings &amp; investment planner</div>
     </div>
-
-    <!-- Summary Cards -->
-    <div class="summary-grid" id="summaryGrid"></div>
-
-    <!-- Priority Checklist -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="section-title">🏗️ Financial Foundation First</div>
-      <div id="foundationList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" id="tabReg" onclick="switchTab('register')">Create Account</button>
     </div>
-
-    <!-- Allocation -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="section-title">📊 Monthly Allocation Breakdown</div>
-      <div class="bar-track" id="allocBar"></div>
-      <div class="alloc-list" id="allocList"></div>
-    </div>
-
-    <!-- Investment Tips -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="section-title">💡 Personalised Investment Tips</div>
-      <div class="tips-grid" id="tipsList"></div>
-    </div>
-
-    <!-- Expense Tracker -->
-    <div class="card expense-section">
-      <div class="expense-header">
-        <div>
-          <div class="section-title" style="margin-bottom:4px;">💸 Discretionary Budget Tracker</div>
-          <div style="font-size:0.83rem;color:var(--text2)">Track spending from your discretionary allowance</div>
-        </div>
-        <button class="btn" onclick="toggleExpenseForm()" style="padding:10px 18px;font-size:0.9rem;">+ Add Expense</button>
-      </div>
-
-      <!-- Budget Overview -->
-      <div class="budget-bar-wrap">
-        <div class="budget-row">
-          <div>
-            <div style="font-size:0.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Remaining Budget</div>
-            <div class="budget-remaining" id="remainingBudget">₹0</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:0.8rem;color:var(--text2)">Spent</div>
-            <div style="font-weight:700;font-family:'Playfair Display',serif;color:var(--red)" id="spentTotal">₹0</div>
-          </div>
-        </div>
-        <div class="budget-track">
-          <div class="budget-fill" id="budgetFill" style="width:0%;background:var(--accent)"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text3);margin-top:6px;">
-          <span>0</span><span id="budgetMax">₹0 Total</span>
+    <!-- LOGIN -->
+    <div class="auth-panel active" id="panLogin">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Sign in to continue with your savings plan</div>
+      <div class="fgroup"><label class="flabel">Email address</label><input type="text" class="finput" id="liEmail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fgroup">
+        <label class="flabel" style="display:flex;justify-content:space-between;align-items:center">
+          Password
+          <a class="forgot-link" onclick="showForgot()">Forgot password?</a>
+        </label>
+        <div class="pw-wrap">
+          <input type="password" class="finput" id="liPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+          <button class="pw-eye" type="button" onclick="togglePw('liPass',this)" title="Show/hide password">
+            <svg id="liPassEye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
         </div>
       </div>
-
-      <!-- Add Form -->
-      <div class="add-expense-form" id="expenseForm">
-        <div class="expense-row">
-          <div class="form-group" style="margin:0">
-            <label>Expense Name</label>
-            <input type="text" id="expName" placeholder="e.g. Netflix subscription">
-          </div>
-          <div class="form-group" style="margin:0">
-            <label>Amount (₹)</label>
-            <div class="input-prefix"><span>₹</span><input type="number" id="expAmt" placeholder="0"></div>
-          </div>
-          <button class="btn" onclick="addExpense()" style="margin-top:20px">Add</button>
-        </div>
-        <div style="margin-top:12px;">
-          <label>Category</label>
-          <div class="toggle-group">
-            <button class="toggle-btn active" onclick="setExpCat(this,'🎬')">🎬 Entertainment</button>
-            <button class="toggle-btn" onclick="setExpCat(this,'🛍️')">🛍️ Shopping</button>
-            <button class="toggle-btn" onclick="setExpCat(this,'🍕')">🍕 Dining</button>
-            <button class="toggle-btn" onclick="setExpCat(this,'🚗')">🚗 Travel</button>
-            <button class="toggle-btn" onclick="setExpCat(this,'📦')">📦 Other</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Expense List -->
-      <div class="expense-list" id="expenseList"></div>
+      <button class="btn-auth" onclick="doLogin()">Sign In →</button>
+      <div class="auth-msg" id="liMsg"></div>
+      <div class="auth-switch">No account? <a href="#" onclick="switchTab('register');return false">Create one free</a></div>
     </div>
 
+    <!-- FORGOT PASSWORD -->
+    <div class="auth-panel" id="panForgot">
+      <a class="back-link" onclick="showLogin()">← Back to Sign In</a>
+      <div class="auth-title">Reset your password</div>
+      <div class="auth-sub">Enter your email and choose a new password. Works instantly since your data is stored locally.</div>
+      <div class="fgroup"><label class="flabel">Email address</label><input type="text" class="finput" id="fpEmail" placeholder="you@example.com"></div>
+      <div class="fgroup">
+        <label class="flabel">New Password <span style="font-weight:400;color:var(--text3)">(min 6 chars)</span></label>
+        <div class="pw-wrap">
+          <input type="password" class="finput" id="fpPass" placeholder="New password">
+          <button class="pw-eye" type="button" onclick="togglePw('fpPass',this)" title="Show/hide password">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="flabel">Confirm New Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="finput" id="fpPassC" placeholder="Confirm password" onkeydown="if(event.key==='Enter')doForgot()">
+          <button class="pw-eye" type="button" onclick="togglePw('fpPassC',this)" title="Show/hide password">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn-auth" onclick="doForgot()">Reset Password →</button>
+      <div class="auth-msg" id="fpMsg"></div>
+      <div class="security-note">⚠️ <strong>Note:</strong> Since all data is stored in your browser (no server), this resets your password using your email as identity. Your saved plan data is preserved.</div>
+    </div>
+    <!-- REGISTER -->
+    <div class="auth-panel" id="panReg">
+      <div class="auth-title">Create your account</div>
+      <div class="auth-sub">Free forever · Data stays in your browser · No servers</div>
+      <div class="fgroup"><label class="flabel">Full Name</label><input type="text" class="finput" id="rgName" placeholder="Rahul Sharma" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <div class="fgroup"><label class="flabel">Email address</label><input type="text" class="finput" id="rgEmail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <div class="fgroup">
+        <label class="flabel">Password <span style="font-weight:400;color:var(--text3)">(min 6 chars)</span></label>
+        <div class="pw-wrap">
+          <input type="password" class="finput" id="rgPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()">
+          <button class="pw-eye" type="button" onclick="togglePw('rgPass',this)" title="Show/hide password">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn-auth" onclick="doRegister()">Create Account →</button>
+      <div class="auth-msg" id="rgMsg"></div>
+      <div class="auth-switch">Have an account? <a href="#" onclick="switchTab('login');return false">Sign in</a></div>
+      <div style="margin-top:16px;padding:10px 12px;background:var(--cta-light);border-radius:var(--r-sm);font-size:.76rem;color:#1e40af;text-align:center">🔒 Data stored locally in your browser. Nothing sent to any server.</div>
+    </div>
   </div>
-</main>
+</div>
 
-<button class="reset-btn" onclick="resetAll()">⟳ Start Over</button>
+<!-- APP -->
+<div id="appScreen">
+  <header class="app-hdr">
+    <div class="hdr-logo">
+      <div class="hdr-logo-ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      WealthPath
+    </div>
+    <div class="hdr-dots" id="stepDots"></div>
+    <div class="hdr-right">
+      <button class="theme-pill" onclick="toggleTheme()">
+        <div class="theme-track"><div class="theme-thumb"></div></div>
+        <span id="themeLbl">Night</span>
+      </button>
+      <div class="user-pill">
+        <div class="user-av" id="uAv">?</div>
+        <span class="user-nm" id="uNm"></span>
+      </div>
+      <button class="btn-so" onclick="doSignOut()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="app-main">
+
+    <!-- STEPS -->
+    <div id="stepsWrap">
+
+      <!-- S1 -->
+      <div class="step-w active" id="step-1">
+        <div class="step-card">
+          <div class="step-no">Step 1 of 5</div>
+          <div class="step-ttl">The basics</div>
+          <div class="step-sub">Tell us about yourself to build your personalised financial blueprint.</div>
+          <div class="fgroup"><label>Your Age</label><input type="number" id="age" placeholder="e.g. 28" min="18" max="70"></div>
+          <div class="fgroup"><label>Monthly Salary</label><div class="iw"><span class="pfx">₹</span><input type="number" id="salary" placeholder="e.g. 80000"></div></div>
+          <div class="fgroup"><label>Number of Dependents</label>
+            <select id="dependents" onchange="updateFamilyQ()">
+              <option value="0">None — I support only myself</option>
+              <option value="1">1 (spouse / parent / child)</option>
+              <option value="2">2</option>
+              <option value="3">3 or more</option>
+            </select>
+          </div>
+          <div class="btn-row"><button class="btn" onclick="goNext(1)">Continue →</button></div>
+        </div>
+      </div>
+
+      <!-- S2 -->
+      <div class="step-w" id="step-2">
+        <div class="step-card">
+          <div class="step-no">Step 2 of 5</div>
+          <div class="step-ttl">Protection check</div>
+          <div class="step-sub">Insurance is the bedrock of financial planning. Audit your coverage first.</div>
+          <div class="fgroup">
+            <label>Do you have <strong>Health Insurance</strong> for yourself?</label>
+            <div class="yn-grid">
+              <div class="yn-card" id="shY" onclick="setYN('sh','yes')"><div class="yn-em">✅</div><div><div class="yn-lbl">Yes, I'm covered</div><div class="yn-sub">Individual or employer cover</div></div></div>
+              <div class="yn-card" id="shN" onclick="setYN('sh','no')"><div class="yn-em">❌</div><div><div class="yn-lbl">Not yet</div><div class="yn-sub">I need to get one</div></div></div>
+            </div>
+          </div>
+          <div id="famWrap" style="display:none" class="fgroup">
+            <label>Are your <strong>family members</strong> covered under health insurance?</label>
+            <div class="yn-grid">
+              <div class="yn-card" id="fhY" onclick="setYN('fh','yes')"><div class="yn-em">👨‍👩‍👧</div><div><div class="yn-lbl">Yes, all covered</div><div class="yn-sub">Family floater or separate policies</div></div></div>
+              <div class="yn-card" id="fhN" onclick="setYN('fh','no')"><div class="yn-em">❌</div><div><div class="yn-lbl">Not yet</div><div class="yn-sub">They still need coverage</div></div></div>
+            </div>
+          </div>
+          <div class="fgroup">
+            <label>Do you have a <strong>Term Life Insurance</strong> policy?</label>
+            <div class="yn-grid">
+              <div class="yn-card" id="tlY" onclick="setYN('tl','yes')"><div class="yn-em">🛡️</div><div><div class="yn-lbl">Yes, I'm protected</div><div class="yn-sub">Pure term plan active</div></div></div>
+              <div class="yn-card" id="tlN" onclick="setYN('tl','no')"><div class="yn-em">❌</div><div><div class="yn-lbl">Not yet</div><div class="yn-sub">I don't have one</div></div></div>
+            </div>
+          </div>
+          <div id="insAlert"></div>
+          <div class="btn-row">
+            <button class="btn-out" onclick="goBack(2)">← Back</button>
+            <button class="btn" onclick="goNext(2)">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- S3 -->
+      <div class="step-w" id="step-3">
+        <div class="step-card">
+          <div class="step-no">Step 3 of 5</div>
+          <div class="step-ttl">Risk appetite</div>
+          <div class="step-sub">This shapes your investment allocation once your emergency fund is built.</div>
+          <div class="risk-grid">
+            <div class="risk-card" onclick="selRisk('conservative',this)"><div class="risk-ico">🛡️</div><div class="risk-lbl">Conservative</div><div class="risk-dsc">Safety first. Capital protection over high returns.</div></div>
+            <div class="risk-card" onclick="selRisk('moderate',this)"><div class="risk-ico">⚖️</div><div class="risk-lbl">Moderate</div><div class="risk-dsc">Balanced growth. Comfortable with short-term dips.</div></div>
+            <div class="risk-card" onclick="selRisk('aggressive',this)"><div class="risk-ico">🚀</div><div class="risk-lbl">Aggressive</div><div class="risk-dsc">Maximise long-term returns. Can handle volatility.</div></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-out" onclick="goBack(3)">← Back</button>
+            <button class="btn" onclick="goNext(3)">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- S4 -->
+      <div class="step-w" id="step-4">
+        <div class="step-card">
+          <div class="step-no">Step 4 of 5</div>
+          <div class="step-ttl">Fixed monthly expenses</div>
+          <div class="step-sub">Non-negotiable outflows each month. Be accurate — this powers your whole plan.</div>
+          <div class="fgroup"><label>Rent / Home Loan EMI</label><div class="iw"><span class="pfx">₹</span><input type="number" id="rent" placeholder="0"></div></div>
+          <div class="fgroup"><label>Groceries &amp; Food</label><div class="iw"><span class="pfx">₹</span><input type="number" id="groceries" placeholder="0"></div></div>
+          <div class="fgroup"><label>Transport / Fuel</label><div class="iw"><span class="pfx">₹</span><input type="number" id="transport" placeholder="0"></div></div>
+          <div class="fgroup"><label>Utilities, Bills &amp; Other Fixed</label><div class="iw"><span class="pfx">₹</span><input type="number" id="otherExp" placeholder="0"></div></div>
+          <div id="expAlert" class="alert alert-warn" style="display:none"></div>
+          <div class="btn-row">
+            <button class="btn-out" onclick="goBack(4)">← Back</button>
+            <button class="btn" onclick="goNext(4)">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- S5 -->
+      <div class="step-w" id="step-5">
+        <div class="step-card">
+          <div class="step-no">Step 5 of 5</div>
+          <div class="step-ttl">Savings goal</div>
+          <div class="step-sub"><strong>Golden rule:</strong> Build a 6-month emergency fund before investing a single rupee in markets.</div>
+          <div class="fgroup"><label>Current Savings / Emergency Fund</label><div class="iw"><span class="pfx">₹</span><input type="number" id="curSav" placeholder="0 if starting fresh" oninput="calcSave()"></div></div>
+          <div class="fgroup">
+            <label>Monthly Savings Rate — <span id="saveRateLbl" style="color:var(--cta);font-weight:800">20%</span></label>
+            <input type="range" id="saveRate" min="5" max="60" value="20" oninput="calcSave()">
+            <div class="range-lbl"><span>5% Minimal</span><span>60% Warrior</span></div>
+          </div>
+          <div class="val-box">
+            <div class="val-box-lbl">Monthly Savings Target</div>
+            <div class="val-box-amt" id="saveAmt">₹0</div>
+            <div class="val-box-note" id="saveNote">—</div>
+          </div>
+          <div id="efBox" class="alert alert-info">🏦 Enter salary &amp; expenses to see your emergency fund target.</div>
+          <div class="btn-row">
+            <button class="btn-out" onclick="goBack(5)">← Back</button>
+            <button class="btn btn-grn" onclick="genPlan()">Generate My Plan ✨</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /stepsWrap -->
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+      <div class="dash-hero">
+        <div class="dash-ttl" id="dashTtl">Your Financial Blueprint</div>
+        <div class="dash-sub" id="dashSub"></div>
+        <div class="dash-chips" id="dashChips"></div>
+        <div class="dash-footer">
+          <button class="btn-reset" onclick="doReset()">⟳ Reset Plan</button>
+        </div>
+      </div>
+
+      <div id="phaseBan" class="phase-ban emg"></div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="showTab('ov',this)">📊 Overview</button>
+        <button class="tab-btn" onclick="showTab('ef',this)">🏦 Emergency Fund</button>
+        <button class="tab-btn" onclick="showTab('inv',this)">📈 Investments</button>
+        <button class="tab-btn" onclick="showTab('exp',this)">💸 Expenses</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div class="tab-pan active" id="tab-ov">
+        <div class="sum-grid" id="sumGrid"></div>
+        <div class="sec-card"><div class="sec-ttl">🛡️ Protection Status</div><div id="insRows"></div></div>
+        <div class="sec-card"><div class="sec-ttl">🏗️ Financial Priority Checklist</div><div id="priList"></div></div>
+      </div>
+
+      <!-- EF -->
+      <div class="tab-pan" id="tab-ef">
+        <div class="sec-card">
+          <div class="sec-ttl">🏦 Emergency Fund Tracker <span class="sec-badge" id="efBadge">0%</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:13px;margin-bottom:16px">
+            <div>
+              <div style="font-size:.77rem;color:var(--text2);margin-bottom:4px;font-weight:500">Target: 6 months of essential expenses</div>
+              <div id="efBigNum" style="font-size:1.65rem;font-weight:800;color:var(--text);letter-spacing:-1px">₹0 / ₹0</div>
+            </div>
+            <div class="ef-stats">
+              <div><div class="ef-sv" id="efMoDone" style="color:var(--secondary)">0</div><div class="ef-sl">Months Saved</div></div>
+              <div><div class="ef-sv" id="efMoLeft" style="color:var(--text2)">6</div><div class="ef-sl">Months Left</div></div>
+              <div><div class="ef-sv" id="efETA" style="color:var(--cta)">—</div><div class="ef-sl">ETA</div></div>
+            </div>
+          </div>
+          <div class="ef-track"><div class="ef-fill" id="efFill" style="width:0%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:.71rem;color:var(--text3);margin-bottom:3px;font-weight:500"><span id="efCur">₹0 saved</span><span id="efGoal">₹0 target</span></div>
+          <div class="ef-mo-grid" id="efGrid"></div>
+          <hr class="divider">
+          <div style="font-size:.85rem;font-weight:700;margin-bottom:9px;color:var(--text)">Log a deposit to your Emergency Fund</div>
+          <div class="ef-add-row">
+            <div class="fgroup"><label>Amount to Deposit</label><div class="iw"><span class="pfx">₹</span><input type="number" id="efAdd" placeholder="e.g. 5000"></div></div>
+            <button class="btn btn-grn" onclick="addToEF()">+ Add Deposit</button>
+          </div>
+          <div id="efDone" class="alert alert-ok" style="display:none;margin-top:12px">🎉 <strong>Emergency Fund Complete!</strong> Investments are now fully unlocked.</div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ttl">💡 Emergency Fund Rules</div>
+          <div class="tips-grid">
+            <div class="tip-card"><div class="tip-ico">🏦</div><div><div class="tip-hd">Where to Keep It</div><div class="tip-tx">Liquid mutual fund, high-yield savings, or short-term FD. Never in equities or crypto.</div></div></div>
+            <div class="tip-card"><div class="tip-ico">🔒</div><div><div class="tip-hd">Only Real Emergencies</div><div class="tip-tx">Job loss, medical crisis, urgent repairs only — not vacations or planned purchases.</div></div></div>
+            <div class="tip-card"><div class="tip-ico">🔄</div><div><div class="tip-hd">Rebuild After Using</div><div class="tip-tx">Dip into it? Pause investments and rebuild back to 6 months before resuming.</div></div></div>
+            <div class="tip-card"><div class="tip-ico">📈</div><div><div class="tip-hd">Liquid Funds > Savings</div><div class="tip-tx">Liquid MFs yield ~6–7% with T+1 redemption — far better than 3–3.5% savings accounts.</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INVEST -->
+      <div class="tab-pan" id="tab-inv">
+        <div id="invLock" class="alert alert-warn" style="display:none;margin-bottom:13px">⚠️ <strong>Investments locked.</strong> Complete your 6-month Emergency Fund first — then every rupee starts working for you.</div>
+        <div id="invContent">
+          <div class="sec-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:14px">
+              <div class="sec-ttl" style="margin:0">📊 Monthly Allocation</div>
+              <span class="badge badge-blue" id="allocTotal">Total: ₹0/mo</span>
+            </div>
+            <div class="alloc-bar-track" id="allocBar"></div>
+            <div id="allocList"></div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ttl">⚡ Boost Your Investments</div>
+            <div style="font-size:.81rem;color:var(--text2);margin-bottom:14px;line-height:1.6">Got a bonus or raise? Route extra money into investments and accelerate your retirement corpus.</div>
+            <div class="boost-grid">
+              <div class="boost-card" onclick="selBoost(500,this)"><div class="boost-amt">₹500</div><div class="boost-lbl">Small start</div></div>
+              <div class="boost-card" onclick="selBoost(2000,this)"><div class="boost-amt">₹2,000</div><div class="boost-lbl">Steady growth</div></div>
+              <div class="boost-card" onclick="selBoost(5000,this)"><div class="boost-amt">₹5,000</div><div class="boost-lbl">Accelerate</div></div>
+            </div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:4px">
+              <button class="btn-out" style="font-size:.77rem;padding:7px 12px" onclick="toggleCustBoost()">✏️ Custom</button>
+              <button class="btn-out" style="font-size:.77rem;padding:7px 12px" onclick="clearBoost()">✕ Clear</button>
+            </div>
+            <div class="boost-cust" id="boostCust">
+              <div class="fgroup" style="flex:1;margin:0;min-width:150px"><label>Custom Boost</label><div class="iw"><span class="pfx">₹</span><input type="number" id="custBoostAmt" placeholder="Enter amount" oninput="applyCustBoost()"></div></div>
+            </div>
+            <div id="boostProj" style="display:none;margin-top:12px"></div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ttl">💡 Personalised Tips</div>
+            <div class="tips-grid" id="tipsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPENSES -->
+      <div class="tab-pan" id="tab-exp">
+        <div class="sec-card">
+          <div class="exp-hdr">
+            <div>
+              <div class="sec-ttl" style="margin-bottom:2px">💸 Discretionary Tracker</div>
+              <div style="font-size:.77rem;color:var(--text2)">Track spending from your free-to-spend allowance</div>
+            </div>
+            <button class="btn" onclick="toggleExpForm()" style="padding:8px 15px;font-size:.82rem">+ Add</button>
+          </div>
+          <div class="bud-wrap">
+            <div class="bud-row">
+              <div><div class="bud-lbl">Remaining</div><div class="bud-val" id="budRem" style="color:var(--cta)">₹0</div></div>
+              <div style="text-align:right"><div class="bud-lbl">Spent</div><div class="bud-val" id="budSpent" style="color:var(--red)">₹0</div></div>
+            </div>
+            <div class="bud-track"><div class="bud-fill" id="budFill" style="width:0%;background:var(--cta)"></div></div>
+            <div class="bud-meta"><span>₹0</span><span id="budMax">₹0 total</span></div>
+          </div>
+          <div class="add-exp-form" id="expForm">
+            <div class="exp-row">
+              <div class="fgroup" style="margin:0"><label>Name</label><input type="text" id="expName" placeholder="e.g. Netflix"></div>
+              <div class="fgroup" style="margin:0"><label>Amount</label><div class="iw"><span class="pfx">₹</span><input type="number" id="expAmt" placeholder="0"></div></div>
+              <button class="btn" onclick="addExpense()" style="margin-top:21px;padding:10px 14px">Add</button>
+            </div>
+            <div><label style="margin-bottom:6px">Category</label>
+              <div class="tog-grp">
+                <button class="tog-btn active" onclick="setExpCat(this,'🎬')">🎬 Entertainment</button>
+                <button class="tog-btn" onclick="setExpCat(this,'🛍️')">🛍️ Shopping</button>
+                <button class="tog-btn" onclick="setExpCat(this,'🍕')">🍕 Dining</button>
+                <button class="tog-btn" onclick="setExpCat(this,'🚗')">🚗 Travel</button>
+                <button class="tog-btn" onclick="setExpCat(this,'📦')">📦 Other</button>
+              </div>
+            </div>
+          </div>
+          <div id="expList"></div>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+  </div><!-- /app-main -->
+</div><!-- /appScreen -->
+
 <script src="app.js"></script>
 </body>
 </html>
